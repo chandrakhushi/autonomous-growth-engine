@@ -11,10 +11,7 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20.18.0"
-      # Connection/Scalekit + real connector tokens go here once wired:
-      # - key: LINEAR_API_KEY
-      #   sync: false
-      # - key: GITHUB_TOKEN
-      #   sync: false
-      # - key: POSTHOG_API_KEY
-      #   sync: false
+      # Backend agent microservice — the UI proxies /api/run + /api/connections/*
+      # to this. Falls back to the default in lib/backend.js if unset.
+      - key: BACKEND_URL
+        value: "https://autonomous-growth-engine-backend.onrender.com"
