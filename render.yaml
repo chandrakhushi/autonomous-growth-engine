@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: autonomous-growth-engine
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/run
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20.18.0"
+      # Connection/Scalekit + real connector tokens go here once wired:
+      # - key: LINEAR_API_KEY
+      #   sync: false
+      # - key: GITHUB_TOKEN
+      #   sync: false
+      # - key: POSTHOG_API_KEY
+      #   sync: false
