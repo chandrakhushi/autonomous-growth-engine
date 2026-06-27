@@ -1,35 +1,39 @@
 import { NextResponse } from "next/server";
 import { pickScenario } from "@/lib/scenarios";
+import { BACKEND_URL } from "@/lib/backend";
 
 // POST /api/run
-// Request:  { "prompt": "analyze onboarding friction around export" }
-// Response: { area, signal, insight, asset, ticket, pr, summary }
-//
-// This is the single integration seam for the team. Today it resolves a
-// scripted scenario (reliable for demos, no keys needed). To make it live,
-// replace the body below with real calls:
-//   1. signal  -> PostHog query API (events in the last window)
-//   2. insight -> LLM/heuristic over the events
-//   3. asset   -> generated code/content diff
-//   4. ticket  -> Linear GraphQL `issueCreate`
-//   5. pr      -> GitHub `POST /repos/{owner}/{repo}/pulls`
-// Auth/connection tokens are expected to come from the Scalekit-backed
-// connection layer (teammates) via env vars or a per-request header.
+// Proxies to the backend agent microservice (the real Scalekit-connected
+// signal -> insight -> asset -> ticket -> PR loop). If the backend is
+// unreachable, falls back to a scripted scenario so the demo never breaks.
+// Response shape is identical either way: { mode, area, signal, insight, asset,
+// ticket, pr, summary }.
 export async function POST(req) {
   let body = {};
   try {
     body = await req.json();
   } catch {
-    // empty/invalid body is fine — we fall back to the default scenario
+    // empty/invalid body is fine
+  }
+
+  try {
+    const r = await fetch(`${BACKEND_URL}/api/run`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    });
+    if (r.ok) return NextResponse.json(await r.json());
+  } catch {
+    // backend unreachable — fall through to the scripted fallback
   }
 
   const prompt = typeof body.prompt === "string" ? body.prompt : "";
   const scenario = pickScenario(prompt);
-
   const summary = `Shipped 1 change for the ${scenario.insight.area} loop — ${scenario.ticket.id} filed and PR #${scenario.pr.number} opened. ${scenario.insight.impact}.`;
 
   return NextResponse.json({
-    mode: "simulated", // teammates flip this to "live" when real connectors are wired
+    mode: "simulated",
     area: scenario.insight.area,
     signal: scenario.signal,
     insight: scenario.insight,
