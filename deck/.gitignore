@@ -1,3 +1,7 @@
 node_modules/
 qa.pdf
 slide-*.jpg
+
+# logo exploration artifacts
+logo-options*.svg
+logo-options*.png
