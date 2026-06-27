@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import Composer from "@/components/Composer";
 import RunMessage from "@/components/RunMessage";
 import { SparkIcon, PostHogIcon, LinearIcon, GitHubIcon } from "@/components/icons";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const STEP_PLAN = [
   { kind: "signal", label: "Reading PostHog events…", doneLabel: "Pulled behavioral signals from PostHog", delay: 900 },
@@ -112,9 +113,12 @@ export default function Page() {
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-blink" />
             <span className="text-sm text-sub">Autonomous Growth Engine</span>
           </div>
-          <span className="rounded-full border border-border bg-panel px-2.5 py-1 text-[11px] text-sub">
-            signal → insight → asset → ship
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full border border-border bg-panel px-2.5 py-1 text-[11px] text-sub">
+              signal → insight → asset → ship
+            </span>
+            <ThemeToggle />
+          </div>
         </header>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
@@ -131,13 +135,13 @@ export default function Page() {
                   </div>
                 ) : (
                   <div key={msg.id} className="flex gap-3">
-                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent text-bg">
+                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent text-onaccent">
                       <SparkIcon className="w-4 h-4" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <RunMessage steps={msg.steps} />
                       {msg.summary && (
-                        <div className="mt-3 animate-fadein rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-100">
+                        <div className="mt-3 animate-fadein rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "var(--success-border)", background: "var(--success-bg)", color: "var(--success-text)" }}>
                           {msg.summary}
                         </div>
                       )}
@@ -158,7 +162,7 @@ export default function Page() {
 function EmptyState({ onPick }) {
   return (
     <div className="bg-grid flex h-full flex-col items-center justify-center px-4">
-      <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-bg">
+      <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-onaccent">
         <SparkIcon className="w-7 h-7" />
       </span>
       <h1 className="text-center text-2xl font-semibold text-ink">Autonomous Growth Engine</h1>

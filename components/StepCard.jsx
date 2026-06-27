@@ -1,15 +1,18 @@
 import { PostHogIcon, LinearIcon, GitHubIcon, SparkIcon, CheckIcon } from "./icons";
 
 function Badge({ children, color = "border" }) {
-  const map = {
-    border: "bg-panel2 text-sub border-border",
-    high: "bg-red-500/10 text-red-300 border-red-500/30",
-    medium: "bg-amber-500/10 text-amber-300 border-amber-500/30",
-    green: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
-    linear: "bg-linear/15 text-indigo-300 border-linear/40",
+  const styleMap = {
+    high: { background: "var(--danger-bg)", color: "var(--danger-text)", borderColor: "var(--danger-text)" },
+    medium: { background: "var(--warn-bg)", color: "var(--warn-text)", borderColor: "var(--warn-text)" },
+    green: { background: "var(--success-bg)", color: "var(--success-text)", borderColor: "var(--success-border)" },
+    linear: { background: "var(--linear-bg)", color: "var(--linear-text)", borderColor: "var(--linear-text)" },
   };
+  const base = "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium";
+  if (color === "border" || !styleMap[color]) {
+    return <span className={`${base} bg-panel2 text-sub border-border`}>{children}</span>;
+  }
   return (
-    <span className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium ${map[color] || map.border}`}>
+    <span className={base} style={styleMap[color]}>
       {children}
     </span>
   );
@@ -40,7 +43,7 @@ export function SignalCard({ data }) {
             <Badge>{e.type}</Badge>
             <span className="flex-1 truncate text-sm text-ink">{e.text}</span>
             <span className="text-sm font-semibold text-ink">{e.count}</span>
-            <span className="w-12 text-right text-[11px] text-emerald-400">{e.trend}</span>
+            <span className="w-12 text-right text-[11px]" style={{ color: "var(--success-text)" }}>{e.trend}</span>
           </div>
         ))}
       </div>
@@ -57,9 +60,12 @@ export function InsightCard({ data }) {
         <Badge color="green">{Math.round(data.confidence * 100)}% confidence</Badge>
       </div>
       <p className="text-sm leading-relaxed text-sub">{data.body}</p>
-      <div className="mt-3 flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
-        <CheckIcon className="w-4 h-4 text-emerald-400" />
-        <span className="text-sm text-emerald-200">{data.impact}</span>
+      <div
+        className="mt-3 flex items-center gap-2 rounded-lg border px-3 py-2"
+        style={{ borderColor: "var(--success-border)", background: "var(--success-bg)", color: "var(--success-text)" }}
+      >
+        <CheckIcon className="w-4 h-4" />
+        <span className="text-sm">{data.impact}</span>
       </div>
     </CardShell>
   );
@@ -72,7 +78,7 @@ export function AssetCard({ data }) {
         <p className="text-sm font-medium text-ink">{data.kind}</p>
         <code className="rounded bg-panel2 px-2 py-0.5 text-[11px] text-sub">{data.filename}</code>
       </div>
-      <pre className="overflow-x-auto rounded-lg border border-border bg-[#0b0b0d] p-3 text-[12px] leading-relaxed">
+      <pre className="overflow-x-auto rounded-lg border border-border bg-code p-3 text-[12px] leading-relaxed">
         <code>
           {data.diff.split("\n").map((line, i) => {
             const add = line.startsWith("+");
@@ -100,7 +106,7 @@ export function TicketCard({ data }) {
       <div className="flex items-start gap-3">
         <div className="flex-1">
           <div className="mb-1 flex items-center gap-2">
-            <span className="font-mono text-sm font-semibold text-indigo-300">{data.id}</span>
+            <span className="font-mono text-sm font-semibold" style={{ color: "var(--linear-text)" }}>{data.id}</span>
             <Badge color={data.priority === "High" ? "high" : "medium"}>{data.priority}</Badge>
           </div>
           <p className="text-sm text-ink">{data.title}</p>
@@ -115,7 +121,8 @@ export function TicketCard({ data }) {
       <a
         href="#"
         onClick={(e) => e.preventDefault()}
-        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-linear/40 bg-linear/10 px-3 py-1.5 text-xs font-medium text-indigo-200 hover:bg-linear/20"
+        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium"
+        style={{ borderColor: "var(--linear-text)", background: "var(--linear-bg)", color: "var(--linear-text)" }}
       >
         <LinearIcon className="w-3.5 h-3.5" /> Open in Linear
       </a>

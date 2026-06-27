@@ -36,7 +36,7 @@ export default function Composer({ onSend, disabled }) {
         <button
           onClick={submit}
           disabled={disabled || !value.trim()}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-bg transition-opacity disabled:opacity-30"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-onaccent transition-opacity disabled:opacity-30"
         >
           <ArrowUp className="w-5 h-5" />
         </button>

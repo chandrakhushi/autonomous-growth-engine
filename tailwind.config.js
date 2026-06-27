@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,jsx}",
     "./components/**/*.{js,jsx}",
@@ -7,15 +8,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        bg: "#0d0d0f",
-        panel: "#161618",
-        panel2: "#1d1d20",
-        border: "#2a2a2e",
-        ink: "#ececf1",
-        sub: "#9a9aa5",
-        accent: "#d97757",
-        linear: "#5e6ad2",
-        github: "#e6e6e6",
+        bg: "var(--color-bg)",
+        panel: "var(--color-panel)",
+        panel2: "var(--color-panel2)",
+        border: "var(--color-border)",
+        ink: "var(--color-ink)",
+        sub: "var(--color-sub)",
+        accent: "var(--color-accent)",
+        linear: "var(--color-linear)",
+        code: "var(--color-code)",
+        onaccent: "#0d0d0f",
       },
       fontFamily: {
         sans: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],

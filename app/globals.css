@@ -2,20 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
+:root,
+.dark {
+  --color-bg: #0d0d0f;
+  --color-panel: #161618;
+  --color-panel2: #1d1d20;
+  --color-border: #2a2a2e;
+  --color-ink: #ececf1;
+  --color-sub: #9a9aa5;
+  --color-accent: #d97757;
+  --color-linear: #5e6ad2;
+  --color-code: #0b0b0d;
+
+  --grid-dot: rgba(255, 255, 255, 0.04);
+  --scrollbar: #2a2a2e;
+
+  --success-text: #6ee7b7;
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --success-border: rgba(16, 185, 129, 0.25);
+  --danger-text: #fca5a5;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --warn-text: #fcd34d;
+  --warn-bg: rgba(245, 158, 11, 0.1);
+  --linear-text: #a5b4fc;
+  --linear-bg: rgba(94, 106, 210, 0.15);
+}
+
+.light {
+  --color-bg: #f7f7f8;
+  --color-panel: #ffffff;
+  --color-panel2: #f1f1f3;
+  --color-border: #e4e4e9;
+  --color-ink: #1a1a1f;
+  --color-sub: #6b6b76;
+  --color-accent: #c75c3c;
+  --color-linear: #5e6ad2;
+  --color-code: #1b1b1f;
+
+  --grid-dot: rgba(0, 0, 0, 0.05);
+  --scrollbar: #d4d4d9;
+
+  --success-text: #047857;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --success-border: rgba(16, 185, 129, 0.32);
+  --danger-text: #b91c1c;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --warn-text: #b45309;
+  --warn-bg: rgba(245, 158, 11, 0.13);
+  --linear-text: #4f46e5;
+  --linear-bg: rgba(94, 106, 210, 0.12);
+}
+
 html,
 body {
   height: 100%;
 }
 
 body {
-  background: #0d0d0f;
-  color: #ececf1;
+  background: var(--color-bg);
+  color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2a2a2e transparent;
+  scrollbar-color: var(--scrollbar) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -23,7 +75,7 @@ body {
   height: 8px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #2a2a2e;
+  background: var(--scrollbar);
   border-radius: 8px;
 }
 *::-webkit-scrollbar-track {
@@ -31,6 +83,6 @@ body {
 }
 
 .bg-grid {
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.04) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 0);
   background-size: 22px 22px;
 }
