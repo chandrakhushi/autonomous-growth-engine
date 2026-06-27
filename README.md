@@ -34,6 +34,55 @@ no API keys required. The scripted runs live in [`lib/scenarios.js`](lib/scenari
 To wire real APIs later, replace `pickScenario` output with live calls to the
 PostHog query API, Linear GraphQL `issueCreate`, and the GitHub `pulls` API.
 
+## Deploy to Render
+
+The app is Render-ready: it binds to `$PORT`, pins Node 20, and ships a
+[`render.yaml`](render.yaml) blueprint. The repo must live on the GitHub account
+your Render is connected to (your **personal** GitHub).
+
+**1. Create the repo on your personal GitHub** (github.com → New repository →
+`autonomous-growth-engine`, empty, no README).
+
+**2. Push from this folder** (replace `<you>` with your personal username):
+
+```bash
+cd ~/Desktop/autonomous-growth-engine
+git remote add origin https://github.com/<you>/autonomous-growth-engine.git
+git branch -M main
+git push -u origin main
+```
+
+> The terminal here is signed into the *work* GitHub account. When `git push`
+> prompts, authenticate as your **personal** account (use a personal access
+> token as the password, or `gh auth login` as the personal account first).
+
+**3. Deploy on Render** (one of two ways):
+
+- *Blueprint (uses `render.yaml`):* Render dashboard → **New → Blueprint** →
+  pick the repo → it reads `render.yaml` and provisions the web service.
+- *Manual:* **New → Web Service** → pick the repo →
+  Build `npm install && npm run build`, Start `npm start`, Health check `/api/run`.
+
+Render injects `$PORT` automatically. First deploy takes ~2–3 min; you get a
+`https://autonomous-growth-engine.onrender.com` URL.
+
+> Plan is set to `starter` in `render.yaml` (no cold starts — good for a live
+> demo, covered by your credits). Change to `free` to spend nothing.
+
+## Integration seam (for teammates)
+
+The UI never talks to PostHog/Linear/GitHub directly — it calls **one endpoint**:
+
+```
+POST /api/run   { "prompt": string }
+  -> { mode, area, signal, insight, asset, ticket, pr, summary }
+```
+
+See [`app/api/run/route.js`](app/api/run/route.js). To go live, replace the
+scripted body with real calls (PostHog query → insight → asset → Linear
+`issueCreate` → GitHub `pulls`), pulling connection tokens from the
+Scalekit-backed layer. Flip `mode` to `"live"`. **No UI changes needed.**
+
 ## Structure
 
 | Path | Purpose |
