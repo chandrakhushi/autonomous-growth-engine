@@ -32,6 +32,59 @@ export function CheckIcon({ className = "w-4 h-4" }) {
   );
 }
 
+export function GrowthBars({ className = "w-6 h-6" }) {
+  return (
+    <svg className={className} viewBox="0 0 100 92" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <rect x="16" y="54" width="15" height="26" rx="5" />
+      <rect x="38" y="42" width="15" height="38" rx="5" />
+      <rect x="60" y="32" width="15" height="48" rx="5" />
+      <path d="M67.5 10 L83 32 L52 32 Z" />
+    </svg>
+  );
+}
+
+export function RobotMark({ className = "w-9 h-9" }) {
+  return (
+    <svg className={className} viewBox="0 0 120 124" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* loop (terracotta cycle) */}
+      <circle cx="60" cy="60" r="46" stroke="#D97757" strokeWidth="7" />
+      <path d="M95 33 L106 32 L100 43 Z" fill="#D97757" />
+      <path d="M25 87 L14 88 L20 77 Z" fill="#D97757" />
+      {/* antenna */}
+      <path d="M60 30 L60 18" stroke="#D97757" strokeWidth="5" strokeLinecap="round" />
+      <circle cx="60" cy="14" r="5" fill="#34D399" />
+      {/* ears */}
+      <rect x="29" y="54" width="8" height="18" rx="4" fill="#262B35" stroke="#525866" strokeWidth="2" />
+      <rect x="83" y="54" width="8" height="18" rx="4" fill="#262B35" stroke="#525866" strokeWidth="2" />
+      {/* head */}
+      <rect x="34" y="32" width="52" height="48" rx="15" fill="#262B35" stroke="#525866" strokeWidth="2.5" />
+      {/* visor */}
+      <rect x="42" y="41" width="36" height="29" rx="9" fill="#10121A" />
+      {/* smiling eyes */}
+      <path d="M49 55 q4.5 -6.5 9 0" stroke="#34D399" strokeWidth="3.6" strokeLinecap="round" />
+      <path d="M62 55 q4.5 -6.5 9 0" stroke="#34D399" strokeWidth="3.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function GrowthMark({ className = "w-4 h-4" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 100 100"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="48" cy="54" r="27" />
+      <path d="M33 65 L47 51 L57 59 L71 39" />
+      <path d="M61 35 L76 32 L73 47 Z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function SparkIcon({ className = "w-4 h-4" }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">

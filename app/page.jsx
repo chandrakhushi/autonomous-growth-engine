@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Composer from "@/components/Composer";
 import RunMessage from "@/components/RunMessage";
-import { SparkIcon, PostHogIcon, LinearIcon, GitHubIcon } from "@/components/icons";
+import { GrowthBars, PostHogIcon, LinearIcon, GitHubIcon } from "@/components/icons";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const STEP_PLAN = [
@@ -136,7 +136,7 @@ export default function Page() {
                 ) : (
                   <div key={msg.id} className="flex gap-3">
                     <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent text-onaccent">
-                      <SparkIcon className="w-4 h-4" />
+                      <GrowthBars className="h-4 w-4" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <RunMessage steps={msg.steps} />
@@ -162,8 +162,8 @@ export default function Page() {
 function EmptyState({ onPick }) {
   return (
     <div className="bg-grid flex h-full flex-col items-center justify-center px-4">
-      <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-onaccent">
-        <SparkIcon className="w-7 h-7" />
+      <span className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent text-onaccent">
+        <GrowthBars className="h-9 w-9" />
       </span>
       <h1 className="text-center text-2xl font-semibold text-ink">Autonomous Growth Engine</h1>
       <p className="mt-2 max-w-xl text-center text-sm text-sub">

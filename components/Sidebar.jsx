@@ -1,7 +1,7 @@
 "use client";
 
 import ConnectorsPanel from "./ConnectorsPanel";
-import { SparkIcon } from "./icons";
+import { GrowthBars } from "./icons";
 
 const HISTORY = [
   { label: "Export discoverability loop", active: true },
@@ -14,8 +14,8 @@ export default function Sidebar({ onNew }) {
   return (
     <aside className="flex h-full w-64 flex-col border-r border-border bg-bg">
       <div className="flex items-center gap-2 px-4 py-4">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-onaccent">
-          <SparkIcon className="w-4 h-4" />
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-onaccent">
+          <GrowthBars className="h-5 w-5" />
         </span>
         <div className="leading-tight">
           <p className="text-sm font-semibold text-ink">Growth Engine</p>
