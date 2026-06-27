@@ -17,6 +17,7 @@ export default function ConnectorsPanel() {
   const [status, setStatus] = useState({});
   const [loading, setLoading] = useState(false);
   const [connecting, setConnecting] = useState(null);
+  const [error, setError] = useState(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -37,6 +38,7 @@ export default function ConnectorsPanel() {
 
   async function connect(id) {
     setConnecting(id);
+    setError(null);
     try {
       const r = await fetch(`/api/connections/${id}/link`, {
         method: "POST",
@@ -45,8 +47,9 @@ export default function ConnectorsPanel() {
       });
       const d = await r.json();
       if (d.authUrl) window.open(d.authUrl, "_blank", "noopener,noreferrer");
+      else setError(d.message || d.error || "Could not start the connect flow.");
     } catch {
-      /* ignore — user can retry */
+      setError("Could not reach the backend.");
     } finally {
       setConnecting(null);
     }
@@ -99,6 +102,9 @@ export default function ConnectorsPanel() {
               </button>
             );
           })}
+          {error && (
+            <p className="mt-1 px-2 py-1.5 text-[11px] text-red-400">{error}</p>
+          )}
           <div className="mt-1 border-t border-border px-2 pt-2">
             <button
               onClick={refresh}
