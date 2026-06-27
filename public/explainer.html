@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Autonomous Growth Engine — How it works</title>
+<style>
+  :root {
+    --bg:#0d0d0f; --panel:#161618; --panel2:#1d1d20; --border:#2a2a2e;
+    --ink:#ececf1; --sub:#9a9aa5; --faint:#6e6e7a;
+    --accent:#d97757; --scalekit:#7c8cff; --actian:#34d399; --render:#b69cff; --posthog:#f5b14c;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; }
+  body {
+    background:var(--bg); color:var(--ink); overflow:hidden;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  #stage {
+    position:relative; width:100vw; height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 1px 1px, rgba(255,255,255,.035) 1px, transparent 0);
+    background-size:26px 26px;
+  }
+  .scene {
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:22px;
+    opacity:0; visibility:hidden; transition:opacity .5s ease, visibility .5s;
+    padding:6vh 8vw;
+  }
+  .scene.active { opacity:1; visibility:visible; }
+
+  .eyebrow { color:var(--accent); font-size:14px; font-weight:700; letter-spacing:3px; text-transform:uppercase; }
+  .progress { position:absolute; bottom:0; left:0; height:3px; background:var(--accent); width:0; }
+
+  /* ---------- bars logo ---------- */
+  .logo-bars rect, .logo-bars path { fill:var(--accent); }
+  .scene.active .b1 { animation:grow .5s .1s ease both; }
+  .scene.active .b2 { animation:grow .5s .25s ease both; }
+  .scene.active .b3 { animation:grow .5s .4s ease both; }
+  .scene.active .barrow { animation:pop .4s .75s ease both; }
+  @keyframes grow { from{transform:scaleY(0)} to{transform:scaleY(1)} }
+  @keyframes pop { from{opacity:0;transform:translateY(8px) scale(.6)} to{opacity:1;transform:none} }
+  .logo-bars rect { transform-box:fill-box; transform-origin:bottom; }
+
+  h1 { font-size:46px; font-weight:700; letter-spacing:-.5px; }
+  .tag { color:var(--accent); font-size:22px; font-style:italic; }
+  .sub { color:var(--sub); font-size:17px; max-width:680px; text-align:center; line-height:1.5; }
+
+  .scene.active .fu { animation:fadeUp .6s ease both; }
+  .scene.active .d1 { animation-delay:.5s } .scene.active .d2 { animation-delay:.8s }
+  .scene.active .d3 { animation-delay:1.1s }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+
+  /* ---------- architecture ---------- */
+  .arch { display:flex; align-items:center; gap:0; }
+  .node {
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:14px 18px; min-width:120px; text-align:center; opacity:0; transform:scale(.85);
+  }
+  .node .nt { font-weight:700; font-size:15px; }
+  .node .ns { font-size:11px; color:var(--sub); margin-top:3px; }
+  .scene.active .node { animation:nodeIn .45s ease forwards; }
+  @keyframes nodeIn { to{opacity:1;transform:none} }
+  .arrow { width:46px; height:2px; background:var(--border); position:relative; opacity:0; }
+  .arrow::after { content:""; position:absolute; right:-2px; top:-3px; border:4px solid transparent; border-left-color:var(--accent); }
+  .scene.active .arrow { animation:lineIn .3s ease forwards; }
+  @keyframes lineIn { to{opacity:1} }
+  .gateway { border-color:var(--scalekit); }
+  .ext { display:flex; flex-direction:column; gap:10px; }
+  .pill { display:flex; align-items:center; gap:8px; background:var(--panel2); border:1px solid var(--border); border-radius:999px; padding:7px 14px; font-size:13px; font-weight:600; opacity:0; transform:translateX(-10px); }
+  .scene.active .pill { animation:pillIn .4s ease forwards; }
+  @keyframes pillIn { to{opacity:1;transform:none} }
+  .dot { width:9px; height:9px; border-radius:50%; }
+
+  /* ---------- loop (the run) ---------- */
+  .run { width:560px; max-width:90vw; display:flex; flex-direction:column; gap:10px; }
+  .step { display:flex; align-items:center; gap:10px; opacity:0; transform:translateY(14px); }
+  .scene.active .step { animation:fadeUp .5s ease forwards; }
+  .card {
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:12px 14px; flex:1; display:flex; align-items:center; gap:10px;
+  }
+  .badge { font-size:11px; font-weight:700; padding:3px 8px; border-radius:7px; }
+  .tick { color:var(--actian); font-size:16px; }
+  .summary {
+    margin-top:6px; border:1px solid rgba(52,211,153,.3); background:rgba(52,211,153,.08);
+    color:#a7f3d0; border-radius:12px; padding:13px 16px; font-size:15px; opacity:0; transform:translateY(14px);
+  }
+  .scene.active .summary { animation:fadeUp .5s 3.6s ease forwards; }
+
+  .close-big { font-size:50px; font-weight:700; text-align:center; line-height:1.1; }
+  .sponsors { font-size:18px; font-weight:700; }
+  .url { margin-top:10px; border:1px solid var(--render); color:var(--render); border-radius:12px; padding:10px 18px; font-weight:600; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- SCENE 1 — intro -->
+  <section class="scene" id="s1">
+    <svg class="logo-bars" width="104" height="96" viewBox="0 0 100 92">
+      <rect class="b1" x="16" y="54" width="15" height="26" rx="5"/>
+      <rect class="b2" x="38" y="42" width="15" height="38" rx="5"/>
+      <rect class="b3" x="60" y="32" width="15" height="48" rx="5"/>
+      <path class="barrow" d="M67.5 10 L83 32 L52 32 Z"/>
+    </svg>
+    <h1 class="fu d1">Autonomous Growth Engine</h1>
+    <div class="tag fu d2">A self-improving SaaS layer</div>
+    <div class="sub fu d3">Learns from real user behavior and ships onboarding, SEO &amp; pricing improvements — as the right user.</div>
+  </section>
+
+  <!-- SCENE 2 — how it works -->
+  <section class="scene" id="s2">
+    <div class="eyebrow fu">How it works</div>
+    <div class="arch">
+      <div class="node" style="animation-delay:.1s"><div class="nt">App UI</div><div class="ns">chat</div></div>
+      <div class="arrow" style="animation-delay:.45s"></div>
+      <div class="node" style="animation-delay:.6s; border-color:var(--accent)"><div class="nt">AI Agent</div><div class="ns">reason · decide</div></div>
+      <div class="arrow" style="animation-delay:.95s"></div>
+      <div class="node gateway" style="animation-delay:1.1s"><div class="nt" style="color:var(--scalekit)">Scalekit</div><div class="ns">connectivity</div></div>
+      <div class="arrow" style="animation-delay:1.45s"></div>
+      <div class="ext">
+        <div class="pill" style="animation-delay:1.6s"><span class="dot" style="background:var(--posthog)"></span>PostHog</div>
+        <div class="pill" style="animation-delay:1.8s"><span class="dot" style="background:var(--scalekit)"></span>Linear</div>
+        <div class="pill" style="animation-delay:2.0s"><span class="dot" style="background:var(--ink)"></span>GitHub</div>
+      </div>
+    </div>
+    <div class="node fu d2" style="animation-delay:2.2s; border-color:var(--actian)"><div class="nt" style="color:var(--actian)">Actian</div><div class="ns">memory · past decisions</div></div>
+    <div class="sub fu d3" style="animation-delay:2.5s">One agent. Scalekit connects it to your tools. Actian remembers. All on Render.</div>
+  </section>
+
+  <!-- SCENE 3 — the loop in action -->
+  <section class="scene" id="s3">
+    <div class="eyebrow fu">The loop, live</div>
+    <div class="run">
+      <div class="step" style="animation-delay:.2s"><span class="tick">●</span><div class="card"><span class="badge" style="background:rgba(245,177,76,.15);color:var(--posthog)">PostHog</span><span>47 searches for "export" · 31 confused clicks</span></div></div>
+      <div class="step" style="animation-delay:1.0s"><span class="tick">●</span><div class="card"><span class="badge" style="background:rgba(217,119,87,.15);color:var(--accent)">Insight</span><span>Users can't find data export — 86% confidence</span></div></div>
+      <div class="step" style="animation-delay:1.8s"><span class="tick">●</span><div class="card"><span class="badge" style="background:rgba(124,140,255,.15);color:var(--scalekit)">Asset</span><span style="font-family:ui-monospace,monospace;font-size:13px"><span style="color:var(--actian)">+ tooltip</span> on dashboard Export CTA</span></div></div>
+      <div class="step" style="animation-delay:2.6s"><span class="tick">●</span><div class="card"><span class="badge" style="background:rgba(124,140,255,.15);color:var(--scalekit)">Linear</span><span>Filed <b>GRW-204</b> — as the user</span></div></div>
+      <div class="step" style="animation-delay:3.2s"><span class="tick">●</span><div class="card"><span class="badge" style="background:var(--panel2);color:var(--ink)">GitHub</span><span>Opened PR <b>#482</b> — as the user</span></div></div>
+      <div class="summary">✓ Shipped 1 change · est. +6.2% activation</div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 — closing -->
+  <section class="scene" id="s4">
+    <div class="close-big fu d1">Agents that don't just act —<br><span style="color:var(--accent)">they act as you.</span></div>
+    <div class="sponsors fu d2"><span style="color:var(--scalekit)">Scalekit</span> &nbsp;×&nbsp; <span style="color:var(--actian)">Actian</span> &nbsp;×&nbsp; <span style="color:var(--render)">Render</span></div>
+    <div class="url fu d3">autonomous-growth-engine.onrender.com</div>
+  </section>
+
+  <div class="progress" id="bar"></div>
+</div>
+
+<script>
+  const scenes = ["s1","s2","s3","s4"].map(id => document.getElementById(id));
+  const durations = [3400, 5200, 5400, 3600];
+  const bar = document.getElementById("bar");
+  let i = 0;
+  function play() {
+    scenes.forEach((s,k) => s.classList.toggle("active", k === i));
+    const d = durations[i];
+    bar.style.transition = "none"; bar.style.width = "0%";
+    requestAnimationFrame(() => {
+      bar.style.transition = "width " + d + "ms linear";
+      bar.style.width = "100%";
+    });
+    i = (i + 1) % scenes.length;
+    setTimeout(play, d);
+  }
+  // click to restart from the top
+  document.getElementById("stage").addEventListener("click", () => { i = 0; });
+  play();
+</script>
+</body>
+</html>
