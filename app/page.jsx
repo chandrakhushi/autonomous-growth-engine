@@ -59,6 +59,16 @@ export default function Page() {
       return;
     }
 
+    // Connection gate: if the backend says services aren't connected (or the user
+    // asked to connect), show a connect card instead of the step animation.
+    if (scenario && scenario.needsConnection) {
+      setMessages((m) =>
+        m.map((msg) => (msg.id === msgId ? { ...msg, connect: scenario } : msg))
+      );
+      setRunning(false);
+      return;
+    }
+
     for (const plan of STEP_PLAN) {
       const stepId = uid();
       // add the step in "thinking" state
@@ -140,6 +150,7 @@ export default function Page() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <RunMessage steps={msg.steps} />
+                      {msg.connect && <ConnectCard data={msg.connect} />}
                       {msg.summary && (
                         <div className="mt-3 animate-fadein rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "var(--success-border)", background: "var(--success-bg)", color: "var(--success-text)" }}>
                           {msg.summary}
@@ -188,6 +199,75 @@ function EmptyState({ onPick }) {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+const CONNECT_PROVIDERS = [
+  { id: "github", name: "GitHub", icon: GitHubIcon },
+  { id: "posthog", name: "PostHog", icon: PostHogIcon },
+  { id: "linear", name: "Linear", icon: LinearIcon },
+];
+
+function ConnectCard({ data }) {
+  const conns = data?.connections || {};
+  const required = new Set(data?.required || ["github", "posthog"]);
+  const [busy, setBusy] = useState(null);
+  const [err, setErr] = useState(null);
+
+  async function connect(id) {
+    setBusy(id);
+    setErr(null);
+    try {
+      const r = await fetch(`/api/connections/${id}/link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: "demo" }),
+      });
+      const d = await r.json();
+      if (d.authUrl) window.open(d.authUrl, "_blank", "noopener,noreferrer");
+      else setErr(d.message || d.error || "Could not start the connect flow.");
+    } catch {
+      setErr("Could not reach the backend.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="mt-3 animate-fadein rounded-xl border border-border bg-panel p-4">
+      <p className="text-sm font-medium text-ink">Connect your services to start</p>
+      {data?.summary && <p className="mt-1 text-xs text-sub">{data.summary}</p>}
+      <div className="mt-3 space-y-2">
+        {CONNECT_PROVIDERS.map((p) => {
+          const Icon = p.icon;
+          const status = conns[p.id] || "NOT_CONNECTED";
+          const on = status === "ACTIVE";
+          const pending = status === "PENDING";
+          return (
+            <div key={p.id} className="flex items-center gap-3 rounded-lg border border-border bg-panel2 px-3 py-2">
+              <span className="text-ink"><Icon className="h-5 w-5" /></span>
+              <span className="flex-1 text-sm text-ink">
+                {p.name}
+                {!required.has(p.id) && <span className="text-sub"> (optional)</span>}
+              </span>
+              {on ? (
+                <span className="text-xs text-emerald-400">Connected</span>
+              ) : (
+                <button
+                  onClick={() => connect(p.id)}
+                  disabled={busy === p.id}
+                  className="rounded-lg border border-border bg-panel px-3 py-1 text-xs text-ink hover:bg-border disabled:opacity-50"
+                >
+                  {busy === p.id ? "Opening…" : pending ? "Finish connecting" : "Connect"}
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {err && <p className="mt-2 text-xs text-red-400">{err}</p>}
+      <p className="mt-2 text-[11px] text-sub">After authorizing, return here and re-send your request.</p>
     </div>
   );
 }
